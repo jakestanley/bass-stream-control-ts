@@ -70,6 +70,10 @@ const obs_pause = async(is_playing: boolean, obs: OBSWebSocket) => {
             obs_sync(obs);
         }
     }
+
+    obs.call("SetCurrentProgramScene", {
+        sceneName: is_playing ? "Scene" : "Waiting"
+    })
 };
 
 const start = async () => {
@@ -81,7 +85,8 @@ const start = async () => {
     obs_restart(obs)
 
     // stop any playback if we're not playing on launch
-    obs_pause(await ableton.song.get("is_playing"), obs)
+    const is_playing = await ableton.song.get("is_playing");
+    obs_pause(is_playing, obs)
 
     // observe the current playback state
     ableton.song.addListener("is_playing", (is_playing) => obs_pause(is_playing, obs));
